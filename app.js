@@ -1,7 +1,32 @@
 // App State
-let currentWordIndex = 0;
+let currentDayOffset = 0; // 0 = today, 1 = yesterday, 2 = day before, etc.
 let savedWords = JSON.parse(localStorage.getItem('savedWords') || '[]');
 let currentTheme = localStorage.getItem('theme') || 'light';
+
+// Get day of year for a given date
+function getDayOfYear(date) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+    return Math.floor(diff / oneDay);
+}
+
+// Get word index for a specific day offset (0 = today)
+function getWordIndexForDay(dayOffset) {
+    const today = new Date();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() - dayOffset);
+    const dayOfYear = getDayOfYear(targetDate);
+    return dayOfYear % ARABIC_WORDS.length;
+}
+
+// Get date for display
+function getDateForOffset(dayOffset) {
+    const today = new Date();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() - dayOffset);
+    return targetDate;
+}
 
 // DOM Elements
 const elements = {
@@ -42,35 +67,34 @@ function toggleTheme() {
     localStorage.setItem('theme', currentTheme);
 }
 
-// Update date display
-function updateDate() {
-    const now = new Date();
+// Update date display for current offset
+function updateDate(dayOffset = 0) {
+    const date = getDateForOffset(dayOffset);
     const options = { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
     };
-    // French date format
-    const dateFr = now.toLocaleDateString('fr-FR', options);
+    const dateFr = date.toLocaleDateString('fr-FR', options);
     elements.currentDate.textContent = dateFr;
 }
 
-// Get today's word based on date
+// Load today's word
 function loadTodaysWord() {
-    // Use day of year to cycle through words
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const diff = now - start;
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    
-    currentWordIndex = dayOfYear % ARABIC_WORDS.length;
-    displayWord(currentWordIndex);
+    currentDayOffset = 0;
+    displayWordForDay(0);
+}
+
+// Display word for a specific day offset
+function displayWordForDay(dayOffset) {
+    const wordIndex = getWordIndexForDay(dayOffset);
+    updateDate(dayOffset);
+    displayWord(wordIndex, dayOffset);
 }
 
 // Display word
-function displayWord(index) {
+function displayWord(index, dayOffset = 0) {
     const word = ARABIC_WORDS[index];
     if (!word) return;
     
@@ -87,10 +111,8 @@ function displayWord(index) {
         elements.rootLetters.textContent = word.root;
         elements.rootMeaning.textContent = word.rootMeaning;
         
-        // Highlight word in example (search with and without tashkil)
-        const wordBase = word.word.replace(/[َُِْٰٓٔءّـًٌٍّ]/g, '');
+        // Highlight word in example
         let highlightedExample = word.example;
-        // Try to find and highlight the word
         if (word.example.includes(word.word)) {
             highlightedExample = word.example.replace(word.word, `<span class="highlight">${word.word}</span>`);
         }
@@ -100,9 +122,11 @@ function displayWord(index) {
         // Update letters grid
         renderLettersGrid(word.letters);
         
-        // Update navigation
-        elements.prevBtn.disabled = index === 0;
-        elements.nextBtn.disabled = index === ARABIC_WORDS.length - 1;
+        // Update navigation buttons
+        // Can't go to future (dayOffset can't be negative)
+        elements.nextBtn.disabled = (dayOffset === 0);
+        // Can go back in history (limit to ~30 days or word count)
+        elements.prevBtn.disabled = (dayOffset >= Math.min(30, ARABIC_WORDS.length - 1));
         
         // Update archive button
         updateArchiveButton(word.id);
@@ -200,12 +224,9 @@ function openFavoritesModal() {
         }).join('');
         list.innerHTML = items;
         
-        // Add click handlers
+        // Add click handlers - just close modal, can't navigate to arbitrary words
         list.querySelectorAll('.favorite-item').forEach(item => {
             item.addEventListener('click', () => {
-                const index = parseInt(item.dataset.index);
-                currentWordIndex = index;
-                displayWord(index);
                 closeFavoritesModal();
             });
         });
@@ -232,28 +253,32 @@ function setupEventListeners() {
     
     // Listen button
     elements.listenBtn.addEventListener('click', () => {
-        const word = ARABIC_WORDS[currentWordIndex];
+        const wordIndex = getWordIndexForDay(currentDayOffset);
+        const word = ARABIC_WORDS[wordIndex];
         speakArabic(word.word);
     });
     
-    // Navigation
+    // Navigation (prev = go to past, next = go to future/today)
     elements.prevBtn.addEventListener('click', () => {
-        if (currentWordIndex > 0) {
-            currentWordIndex--;
-            displayWord(currentWordIndex);
+        // Go to previous day (further in the past)
+        if (currentDayOffset < Math.min(30, ARABIC_WORDS.length - 1)) {
+            currentDayOffset++;
+            displayWordForDay(currentDayOffset);
         }
     });
     
     elements.nextBtn.addEventListener('click', () => {
-        if (currentWordIndex < ARABIC_WORDS.length - 1) {
-            currentWordIndex++;
-            displayWord(currentWordIndex);
+        // Go to next day (closer to today)
+        if (currentDayOffset > 0) {
+            currentDayOffset--;
+            displayWordForDay(currentDayOffset);
         }
     });
     
     // Archive
     elements.archiveBtn.addEventListener('click', () => {
-        const word = ARABIC_WORDS[currentWordIndex];
+        const wordIndex = getWordIndexForDay(currentDayOffset);
+        const word = ARABIC_WORDS[wordIndex];
         toggleSave(word.id);
     });
     
@@ -275,14 +300,14 @@ function setupEventListeners() {
         const threshold = 50;
         
         if (Math.abs(diff) > threshold) {
-            if (diff > 0 && currentWordIndex < ARABIC_WORDS.length - 1) {
-                // Swipe left (next) - but RTL so actually prev in visual
-                currentWordIndex++;
-                displayWord(currentWordIndex);
-            } else if (diff < 0 && currentWordIndex > 0) {
-                // Swipe right (prev)
-                currentWordIndex--;
-                displayWord(currentWordIndex);
+            if (diff > 0 && currentDayOffset < Math.min(30, ARABIC_WORDS.length - 1)) {
+                // Swipe left = go to past (increase offset)
+                currentDayOffset++;
+                displayWordForDay(currentDayOffset);
+            } else if (diff < 0 && currentDayOffset > 0) {
+                // Swipe right = go to future/today (decrease offset)
+                currentDayOffset--;
+                displayWordForDay(currentDayOffset);
             }
         }
     }

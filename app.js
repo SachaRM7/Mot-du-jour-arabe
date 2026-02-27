@@ -38,6 +38,57 @@ function getDateForOffset(dayOffset) {
     return targetDate;
 }
 
+// Remove Arabic diacritics (tashkil) for comparison
+function removeTashkil(text) {
+    return text.replace(/[\u064B-\u065F\u0670]/g, '');
+}
+
+// Highlight word in example sentence
+function highlightWordInExample(word, example) {
+    const wordBase = removeTashkil(word);
+    
+    // Find the word in the example (ignoring tashkil)
+    const exampleBase = removeTashkil(example);
+    const index = exampleBase.indexOf(wordBase);
+    
+    if (index === -1) {
+        // Try to find the root letters in sequence
+        return example; // No match found
+    }
+    
+    // Find the actual position in the original text with tashkil
+    let actualStart = 0;
+    let baseCount = 0;
+    
+    for (let i = 0; i < example.length; i++) {
+        if (baseCount === index) {
+            actualStart = i;
+            break;
+        }
+        if (!/[\u064B-\u065F\u0670]/.test(example[i])) {
+            baseCount++;
+        }
+    }
+    
+    // Find the end position
+    let actualEnd = actualStart;
+    let matchedBase = 0;
+    
+    for (let i = actualStart; i < example.length && matchedBase < wordBase.length; i++) {
+        actualEnd = i + 1;
+        if (!/[\u064B-\u065F\u0670]/.test(example[i])) {
+            matchedBase++;
+        }
+    }
+    
+    // Build highlighted string
+    const before = example.substring(0, actualStart);
+    const match = example.substring(actualStart, actualEnd);
+    const after = example.substring(actualEnd);
+    
+    return `${before}<span class="highlight">${match}</span>${after}`;
+}
+
 // DOM Elements
 const elements = {
     currentDate: document.getElementById('currentDate'),
@@ -131,12 +182,8 @@ function displayWord(index, dayOffset = 0) {
         elements.rootLetters.textContent = word.root;
         elements.rootMeaning.textContent = word.rootMeaning;
         
-        // Highlight word in example
-        let highlightedExample = word.example;
-        if (word.example.includes(word.word)) {
-            highlightedExample = word.example.replace(word.word, `<span class="highlight">${word.word}</span>`);
-        }
-        elements.exampleAr.innerHTML = highlightedExample;
+        // Highlight word in example (ignore tashkil for matching)
+        elements.exampleAr.innerHTML = highlightWordInExample(word.word, word.example);
         elements.exampleFr.textContent = word.exampleFr;
         
         // Update letters grid

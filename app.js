@@ -1,7 +1,16 @@
 // App State
 let currentDayOffset = 0; // 0 = today, 1 = yesterday, 2 = day before, etc.
 let savedWords = JSON.parse(localStorage.getItem('savedWords') || '[]');
-let currentTheme = localStorage.getItem('theme') || 'light';
+// Get initial theme: saved preference > system preference > light
+function getInitialTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+    return 'light';
+}
+let currentTheme = getInitialTheme();
 let showLetterForms = false;
 
 // Get day of year for a given date

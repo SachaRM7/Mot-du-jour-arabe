@@ -563,8 +563,13 @@ svg {
     fill: none !important;
 }
 
-.theme-toggle .moon-icon {
+/* Light mode: show moon (to switch to dark) */
+.theme-toggle .sun-icon {
     display: none;
+}
+
+.theme-toggle .moon-icon {
+    display: block;
 }
 
 /* Dark Mode - Saturated palette */
@@ -601,12 +606,13 @@ svg {
     color: #E5E5E5;
 }
 
+/* Dark mode: show sun (to switch to light) */
 [data-theme="dark"] .theme-toggle .sun-icon {
-    display: none;
+    display: block;
 }
 
 [data-theme="dark"] .theme-toggle .moon-icon {
-    display: block;
+    display: none;
 }
 
 /* Favorites Modal */

@@ -160,7 +160,7 @@ const ARABIC_WORDS = [
         rootMeaning: "Racine liée à l'amour, l'affection",
         letters: [
             { letter: "ح", name: "ḥāʾ", forms: ["ح", "حـ", "ـحـ", "ـح"] },
-            { letter: "بّ", name: "bāʾ (gémination)", forms: ["بّ", "بّـ", "ـبّـ", "ـبّ"] }
+            { letter: "بّ", name: "bāʾ (avec shadda)", forms: ["بّ", "بّـ", "ـبّـ", "ـبّ"] }
         ],
         example: "الحُبُّ فِي اللهِ أَعْظَمُ الحُبّ",
         exampleFr: "L'amour en Allah est le plus grand amour"

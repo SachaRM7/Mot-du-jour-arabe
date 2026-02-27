@@ -372,12 +372,10 @@ function setupEventListeners() {
     }
 }
 
-// Service Worker Registration
+// Unregister any existing Service Worker to avoid cache issues
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('SW registered'))
-            .catch(err => console.log('SW registration failed:', err));
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(reg => reg.unregister());
     });
 }
 

@@ -46,45 +46,39 @@ function removeTashkil(text) {
 // Highlight word in example sentence
 function highlightWordInExample(word, example) {
     const wordBase = removeTashkil(word);
+    const chars = [...example]; // Split by actual characters
     
-    // Find the word in the example (ignoring tashkil)
+    // Build a map: for each char, track its "base index" (ignoring tashkil)
+    let baseIndex = 0;
+    const charMap = chars.map((char, i) => {
+        const isTashkil = /[\u064B-\u065F\u0670]/.test(char);
+        const result = { char, index: i, baseIndex: isTashkil ? -1 : baseIndex };
+        if (!isTashkil) baseIndex++;
+        return result;
+    });
+    
+    // Find wordBase in the base string
     const exampleBase = removeTashkil(example);
-    const index = exampleBase.indexOf(wordBase);
+    const matchIndex = exampleBase.indexOf(wordBase);
     
-    if (index === -1) {
-        // Try to find the root letters in sequence
-        return example; // No match found
+    if (matchIndex === -1) return example;
+    
+    // Find start and end character indices
+    const startChar = charMap.find(c => c.baseIndex === matchIndex);
+    const endBaseIndex = matchIndex + wordBase.length - 1;
+    const endChar = charMap.filter(c => c.baseIndex === endBaseIndex).pop();
+    
+    if (!startChar || !endChar) return example;
+    
+    // Include any trailing tashkil after the last base character
+    let endIndex = endChar.index;
+    while (endIndex + 1 < chars.length && /[\u064B-\u065F\u0670]/.test(chars[endIndex + 1])) {
+        endIndex++;
     }
     
-    // Find the actual position in the original text with tashkil
-    let actualStart = 0;
-    let baseCount = 0;
-    
-    for (let i = 0; i < example.length; i++) {
-        if (baseCount === index) {
-            actualStart = i;
-            break;
-        }
-        if (!/[\u064B-\u065F\u0670]/.test(example[i])) {
-            baseCount++;
-        }
-    }
-    
-    // Find the end position
-    let actualEnd = actualStart;
-    let matchedBase = 0;
-    
-    for (let i = actualStart; i < example.length && matchedBase < wordBase.length; i++) {
-        actualEnd = i + 1;
-        if (!/[\u064B-\u065F\u0670]/.test(example[i])) {
-            matchedBase++;
-        }
-    }
-    
-    // Build highlighted string
-    const before = example.substring(0, actualStart);
-    const match = example.substring(actualStart, actualEnd);
-    const after = example.substring(actualEnd);
+    const before = chars.slice(0, startChar.index).join('');
+    const match = chars.slice(startChar.index, endIndex + 1).join('');
+    const after = chars.slice(endIndex + 1).join('');
     
     return `${before}<span class="highlight">${match}</span>${after}`;
 }

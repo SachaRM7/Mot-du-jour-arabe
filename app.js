@@ -50,7 +50,6 @@ const elements = {
 // Initialize
 function init() {
     initTheme();
-    updateDate();
     loadTodaysWord();
     setupEventListeners();
     updateFavoritesCount();
@@ -88,8 +87,19 @@ function loadTodaysWord() {
 
 // Display word for a specific day offset
 function displayWordForDay(dayOffset) {
+    currentDayOffset = dayOffset;
     const wordIndex = getWordIndexForDay(dayOffset);
-    updateDate(dayOffset);
+    
+    // Update date in header
+    const date = getDateForOffset(dayOffset);
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    elements.currentDate.textContent = date.toLocaleDateString('fr-FR', options);
+    
     displayWord(wordIndex, dayOffset);
 }
 
@@ -138,12 +148,13 @@ function displayWord(index, dayOffset = 0) {
 
 // Render letters breakdown
 function renderLettersGrid(letters) {
+    const formClasses = ['isolated', 'initial', 'medial', 'final'];
     elements.lettersGrid.innerHTML = letters.map(l => `
         <div class="letter-card">
             <div class="letter-arabic">${l.letter}</div>
             <div class="letter-name">${l.name}</div>
             <div class="letter-forms">
-                ${l.forms.slice(0, 4).map(f => `<span class="letter-form">${f}</span>`).join('')}
+                ${l.forms.slice(0, 4).map((f, i) => `<span class="letter-form form-${formClasses[i] || 'isolated'}">${f}</span>`).join('')}
             </div>
         </div>
     `).join('');

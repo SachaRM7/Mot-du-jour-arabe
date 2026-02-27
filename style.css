@@ -232,10 +232,10 @@ svg {
     border-radius: 50%;
 }
 
-.indicator-dot.isolated { background: #A8D5BA; }
+.indicator-dot.isolated { background: #198754; }
 .indicator-dot.initial { background: var(--accent-green); }
-.indicator-dot.medial { background: #FFD60A; }
-.indicator-dot.final { background: var(--text-light); }
+.indicator-dot.medial { background: #FFC107; }
+.indicator-dot.final { background: #6C757D; }
 
 /* Letters Grid */
 .letters-grid {
@@ -280,11 +280,30 @@ svg {
 .letter-form {
     font-family: 'Amiri', serif;
     font-size: 1.1rem;
-    color: var(--accent-green-dark);
-    background: var(--accent-green-light);
     padding: 6px 4px;
     border-radius: 8px;
     text-align: center;
+}
+
+/* Form colors matching indicators */
+.letter-form.form-isolated {
+    background: #D1E7DD;
+    color: #0F5132;
+}
+
+.letter-form.form-initial {
+    background: var(--accent-green);
+    color: white;
+}
+
+.letter-form.form-medial {
+    background: #FFF3CD;
+    color: #664D03;
+}
+
+.letter-form.form-final {
+    background: #E2E3E5;
+    color: #41464B;
 }
 
 /* Root Section */

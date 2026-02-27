@@ -77,11 +77,19 @@ body {
     font-size: 0.8rem;
     color: var(--text-muted);
     box-shadow: var(--shadow);
+    flex-shrink: 0;
 }
 
 .word-counter-badge svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none !important;
+}
+
+/* Ensure all SVGs render as strokes not fills */
+svg {
+    fill: none !important;
 }
 
 /* Main Word Card */
@@ -432,15 +440,17 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .theme-toggle {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     border-radius: 50%;
     border: none;
     background: var(--bg-card);
-    color: var(--text-dark);
+    color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -454,8 +464,10 @@ body {
 }
 
 .theme-toggle svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none !important;
 }
 
 .theme-toggle .moon-icon {

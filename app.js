@@ -17,7 +17,6 @@ const elements = {
     rootMeaning: document.getElementById('rootMeaning'),
     exampleAr: document.getElementById('exampleAr'),
     exampleFr: document.getElementById('exampleFr'),
-    wordCounter: document.getElementById('wordCounter'),
     prevBtn: document.getElementById('prevBtn'),
     nextBtn: document.getElementById('nextBtn'),
     archiveBtn: document.getElementById('archiveBtn')
@@ -29,6 +28,7 @@ function init() {
     updateDate();
     loadTodaysWord();
     setupEventListeners();
+    updateFavoritesCount();
 }
 
 // Theme Management
@@ -86,9 +86,16 @@ function displayWord(index) {
         elements.meaningFr.textContent = word.meaningFr;
         elements.rootLetters.textContent = word.root;
         elements.rootMeaning.textContent = word.rootMeaning;
-        elements.exampleAr.textContent = word.example;
+        
+        // Highlight word in example (search with and without tashkil)
+        const wordBase = word.word.replace(/[َُِْٰٓٔءّـًٌٍّ]/g, '');
+        let highlightedExample = word.example;
+        // Try to find and highlight the word
+        if (word.example.includes(word.word)) {
+            highlightedExample = word.example.replace(word.word, `<span class="highlight">${word.word}</span>`);
+        }
+        elements.exampleAr.innerHTML = highlightedExample;
         elements.exampleFr.textContent = word.exampleFr;
-        elements.wordCounter.textContent = index + 1;
         
         // Update letters grid
         renderLettersGrid(word.letters);
@@ -159,12 +166,69 @@ function toggleSave(wordId) {
 function updateArchiveButton(wordId) {
     const isSaved = savedWords.includes(wordId);
     elements.archiveBtn.classList.toggle('saved', isSaved);
+    updateFavoritesCount();
+}
+
+function updateFavoritesCount() {
+    document.getElementById('favoritesCount').textContent = savedWords.length;
+}
+
+// Favorites Modal
+function openFavoritesModal() {
+    const modal = document.getElementById('favoritesModal');
+    const list = document.getElementById('favoritesList');
+    
+    if (savedWords.length === 0) {
+        list.innerHTML = `
+            <div class="empty-favorites">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p>Aucun favori pour l'instant.<br>Appuie sur le marque-page pour sauvegarder un mot.</p>
+            </div>
+        `;
+    } else {
+        const items = savedWords.map(id => {
+            const word = ARABIC_WORDS.find(w => w.id === id);
+            if (!word) return '';
+            return `
+                <div class="favorite-item" data-index="${ARABIC_WORDS.indexOf(word)}">
+                    <span class="favorite-word">${word.word}</span>
+                    <span class="favorite-meaning">${word.meaningFr}</span>
+                </div>
+            `;
+        }).join('');
+        list.innerHTML = items;
+        
+        // Add click handlers
+        list.querySelectorAll('.favorite-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = parseInt(item.dataset.index);
+                currentWordIndex = index;
+                displayWord(index);
+                closeFavoritesModal();
+            });
+        });
+    }
+    
+    modal.classList.add('active');
+}
+
+function closeFavoritesModal() {
+    document.getElementById('favoritesModal').classList.remove('active');
 }
 
 // Event Listeners
 function setupEventListeners() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    
+    // Favorites button
+    document.getElementById('favoritesBtn').addEventListener('click', openFavoritesModal);
+    document.getElementById('closeModal').addEventListener('click', closeFavoritesModal);
+    document.getElementById('favoritesModal').addEventListener('click', (e) => {
+        if (e.target.id === 'favoritesModal') closeFavoritesModal();
+    });
     
     // Listen button
     elements.listenBtn.addEventListener('click', () => {

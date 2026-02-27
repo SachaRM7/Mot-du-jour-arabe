@@ -1,6 +1,7 @@
 // App State
 let currentWordIndex = 0;
 let savedWords = JSON.parse(localStorage.getItem('savedWords') || '[]');
+let currentTheme = localStorage.getItem('theme') || 'light';
 
 // DOM Elements
 const elements = {
@@ -17,7 +18,6 @@ const elements = {
     exampleAr: document.getElementById('exampleAr'),
     exampleFr: document.getElementById('exampleFr'),
     wordCounter: document.getElementById('wordCounter'),
-    totalWords: document.getElementById('totalWords'),
     prevBtn: document.getElementById('prevBtn'),
     nextBtn: document.getElementById('nextBtn'),
     archiveBtn: document.getElementById('archiveBtn')
@@ -25,10 +25,21 @@ const elements = {
 
 // Initialize
 function init() {
+    initTheme();
     updateDate();
     loadTodaysWord();
     setupEventListeners();
-    elements.totalWords.textContent = ARABIC_WORDS.length;
+}
+
+// Theme Management
+function initTheme() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
 }
 
 // Update date display
@@ -152,6 +163,9 @@ function updateArchiveButton(wordId) {
 
 // Event Listeners
 function setupEventListeners() {
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    
     // Listen button
     elements.listenBtn.addEventListener('click', () => {
         const word = ARABIC_WORDS[currentWordIndex];

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kalima-v1';
+const CACHE_NAME = 'kalima-v2';
 const ASSETS = [
     '/',
     '/index.html',
@@ -8,7 +8,7 @@ const ASSETS = [
     '/manifest.json'
 ];
 
-// Install
+// Install - cache assets
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -17,7 +17,7 @@ self.addEventListener('install', event => {
     );
 });
 
-// Activate
+// Activate - clear old caches
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
@@ -29,28 +29,22 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch
+// Fetch - network first, then cache
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                // Return cached version or fetch new
-                return response || fetch(event.request)
-                    .then(fetchResponse => {
-                        // Cache new resources
-                        if (fetchResponse.ok) {
-                            const clone = fetchResponse.clone();
-                            caches.open(CACHE_NAME)
-                                .then(cache => cache.put(event.request, clone));
-                        }
-                        return fetchResponse;
-                    });
+                // Update cache with fresh response
+                if (response.ok) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => cache.put(event.request, clone));
+                }
+                return response;
             })
             .catch(() => {
                 // Offline fallback
-                if (event.request.destination === 'document') {
-                    return caches.match('/index.html');
-                }
+                return caches.match(event.request);
             })
     );
 });

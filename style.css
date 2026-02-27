@@ -284,15 +284,15 @@ svg {
     border-radius: 50%;
 }
 
-.indicator-dot.isolated { background: #198754; }
+.indicator-dot.isolated { background: #86EFAC; }
 .indicator-dot.initial { background: #22C55E; }
-.indicator-dot.medial { background: #EAB308; }
-.indicator-dot.final { background: #71717A; }
+.indicator-dot.medial { background: #FDE047; }
+.indicator-dot.final { background: #A1A1AA; }
 
 /* Dark mode indicators */
-[data-theme="dark"] .indicator-dot.isolated { background: #4ADE80; }
+[data-theme="dark"] .indicator-dot.isolated { background: #86EFAC; }
 [data-theme="dark"] .indicator-dot.initial { background: #22C55E; }
-[data-theme="dark"] .indicator-dot.medial { background: #FACC15; }
+[data-theme="dark"] .indicator-dot.medial { background: #FDE047; }
 [data-theme="dark"] .indicator-dot.final { background: #A1A1AA; }
 
 /* Letters Grid */
@@ -343,25 +343,25 @@ svg {
     text-align: center;
 }
 
-/* Form colors matching indicators */
+/* Form colors matching indicators - consistent palette */
 .letter-form.form-isolated {
-    background: #D1E7DD;
-    color: #0F5132;
+    background: #BBF7D0;
+    color: #166534;
 }
 
 .letter-form.form-initial {
-    background: var(--accent-green);
+    background: #22C55E;
     color: white;
 }
 
 .letter-form.form-medial {
-    background: #FFF3CD;
-    color: #664D03;
+    background: #FEF08A;
+    color: #854D0E;
 }
 
 .letter-form.form-final {
-    background: #E2E3E5;
-    color: #41464B;
+    background: #D4D4D8;
+    color: #3F3F46;
 }
 
 /* Root Section */

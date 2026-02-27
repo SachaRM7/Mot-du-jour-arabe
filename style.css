@@ -211,11 +211,63 @@ svg {
     color: var(--text-dark);
 }
 
+.toggle-forms-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: var(--bg-cream);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-forms-btn:hover {
+    background: var(--bg-card);
+}
+
+.toggle-forms-btn.active {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: white;
+}
+
+.toggle-forms-btn .toggle-icon {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+
+.toggle-forms-btn.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.letter-card.simple {
+    padding: 12px 16px;
+    min-width: 70px;
+}
+
+.letter-card.simple .letter-arabic {
+    font-size: 2rem;
+    margin-bottom: 2px;
+}
+
+.letter-card.simple .letter-name {
+    margin-bottom: 0;
+}
+
 /* Letter type indicators */
 .letter-indicators {
     display: flex;
-    gap: 16px;
-    margin-left: auto;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
 }
 
 .indicator {
@@ -233,9 +285,15 @@ svg {
 }
 
 .indicator-dot.isolated { background: #198754; }
-.indicator-dot.initial { background: var(--accent-green); }
-.indicator-dot.medial { background: #FFC107; }
-.indicator-dot.final { background: #6C757D; }
+.indicator-dot.initial { background: #22C55E; }
+.indicator-dot.medial { background: #EAB308; }
+.indicator-dot.final { background: #71717A; }
+
+/* Dark mode indicators */
+[data-theme="dark"] .indicator-dot.isolated { background: #4ADE80; }
+[data-theme="dark"] .indicator-dot.initial { background: #22C55E; }
+[data-theme="dark"] .indicator-dot.medial { background: #FACC15; }
+[data-theme="dark"] .indicator-dot.final { background: #A1A1AA; }
 
 /* Letters Grid */
 .letters-grid {
@@ -509,15 +567,38 @@ svg {
     display: none;
 }
 
-/* Dark Mode */
+/* Dark Mode - Saturated palette */
 [data-theme="dark"] {
-    --bg-cream: #1C1C1E;
-    --bg-card: #2C2C2E;
+    --bg-cream: #121212;
+    --bg-card: #1E1E1E;
     --text-dark: #F5F5F5;
-    --text-muted: #A0A0A0;
-    --text-light: #6E6E73;
-    --border-light: #3A3A3C;
-    --accent-green-light: #1B4332;
+    --text-muted: #B0B0B0;
+    --text-light: #888888;
+    --border-light: #333333;
+    --accent-green: #4ADE80;
+    --accent-green-dark: #22C55E;
+    --accent-green-light: #14532D;
+}
+
+/* Dark mode form colors - more vibrant */
+[data-theme="dark"] .letter-form.form-isolated {
+    background: #166534;
+    color: #BBF7D0;
+}
+
+[data-theme="dark"] .letter-form.form-initial {
+    background: #22C55E;
+    color: #052E16;
+}
+
+[data-theme="dark"] .letter-form.form-medial {
+    background: #CA8A04;
+    color: #FEF9C3;
+}
+
+[data-theme="dark"] .letter-form.form-final {
+    background: #525252;
+    color: #E5E5E5;
 }
 
 [data-theme="dark"] .theme-toggle .sun-icon {

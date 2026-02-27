@@ -2,6 +2,7 @@
 let currentDayOffset = 0; // 0 = today, 1 = yesterday, 2 = day before, etc.
 let savedWords = JSON.parse(localStorage.getItem('savedWords') || '[]');
 let currentTheme = localStorage.getItem('theme') || 'light';
+let showLetterForms = false;
 
 // Get day of year for a given date
 function getDayOfYear(date) {
@@ -149,15 +150,43 @@ function displayWord(index, dayOffset = 0) {
 // Render letters breakdown
 function renderLettersGrid(letters) {
     const formClasses = ['isolated', 'initial', 'medial', 'final'];
-    elements.lettersGrid.innerHTML = letters.map(l => `
-        <div class="letter-card">
-            <div class="letter-arabic">${l.letter}</div>
-            <div class="letter-name">${l.name}</div>
-            <div class="letter-forms">
-                ${l.forms.slice(0, 4).map((f, i) => `<span class="letter-form form-${formClasses[i] || 'isolated'}">${f}</span>`).join('')}
+    
+    if (showLetterForms) {
+        // Detailed view with all forms
+        elements.lettersGrid.innerHTML = letters.map(l => `
+            <div class="letter-card">
+                <div class="letter-arabic">${l.letter}</div>
+                <div class="letter-name">${l.name}</div>
+                <div class="letter-forms">
+                    ${l.forms.slice(0, 4).map((f, i) => `<span class="letter-form form-${formClasses[i] || 'isolated'}">${f}</span>`).join('')}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+        document.getElementById('letterIndicators').style.display = 'flex';
+    } else {
+        // Simple view - just the letters
+        elements.lettersGrid.innerHTML = letters.map(l => `
+            <div class="letter-card simple">
+                <div class="letter-arabic">${l.letter}</div>
+                <div class="letter-name">${l.name}</div>
+            </div>
+        `).join('');
+        document.getElementById('letterIndicators').style.display = 'none';
+    }
+}
+
+function toggleLetterForms() {
+    showLetterForms = !showLetterForms;
+    const btn = document.getElementById('toggleFormsBtn');
+    btn.querySelector('.toggle-label').textContent = showLetterForms ? 'Masquer' : 'Voir formes';
+    btn.classList.toggle('active', showLetterForms);
+    
+    // Re-render current word's letters
+    const wordIndex = getWordIndexForDay(currentDayOffset);
+    const word = ARABIC_WORDS[wordIndex];
+    if (word) {
+        renderLettersGrid(word.letters);
+    }
 }
 
 // Text-to-Speech
@@ -254,6 +283,9 @@ function closeFavoritesModal() {
 function setupEventListeners() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    
+    // Letter forms toggle
+    document.getElementById('toggleFormsBtn').addEventListener('click', toggleLetterForms);
     
     // Favorites button
     document.getElementById('favoritesBtn').addEventListener('click', openFavoritesModal);

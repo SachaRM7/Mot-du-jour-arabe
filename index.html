@@ -73,29 +73,37 @@
         <!-- Letter Breakdown -->
         <section class="breakdown-section">
             <div class="section-header">
-                <h3 class="section-title">Letter Breakdown</h3>
-                <div class="letter-indicators">
-                    <div class="indicator">
-                        <span class="indicator-dot isolated"></span>
-                        Isolée
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-dot initial"></span>
-                        Début
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-dot medial"></span>
-                        Milieu
-                    </div>
-                    <div class="indicator">
-                        <span class="indicator-dot final"></span>
-                        Fin
-                    </div>
-                </div>
+                <h3 class="section-title">Lettres</h3>
+                <button class="toggle-forms-btn" id="toggleFormsBtn">
+                    <span class="toggle-label">Voir formes</span>
+                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
             </div>
             
             <div class="letters-grid" id="lettersGrid">
                 <!-- Filled by JS -->
+            </div>
+            
+            <!-- Hidden by default, shown when toggled -->
+            <div class="letter-indicators" id="letterIndicators" style="display: none;">
+                <div class="indicator">
+                    <span class="indicator-dot isolated"></span>
+                    Isolée
+                </div>
+                <div class="indicator">
+                    <span class="indicator-dot initial"></span>
+                    Début
+                </div>
+                <div class="indicator">
+                    <span class="indicator-dot medial"></span>
+                    Milieu
+                </div>
+                <div class="indicator">
+                    <span class="indicator-dot final"></span>
+                    Fin
+                </div>
             </div>
         </section>
 

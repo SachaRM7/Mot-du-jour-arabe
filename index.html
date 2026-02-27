@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#F5F1E8">
+    <title>كلمة اليوم</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="app-title">كَلِمَةُ اليَوم</h1>
+            <p class="date" id="currentDate"></p>
+        </header>
+
+        <!-- Word Card -->
+        <main class="word-card">
+            <span class="word-type" id="wordType">اسم</span>
+            
+            <h2 class="arabic-word" id="arabicWord">طَبِيعَة</h2>
+            <p class="transliteration" id="transliteration">ṭabīʿa</p>
+            
+            <button class="listen-btn" id="listenBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+                استمع
+            </button>
+
+            <div class="meaning-section">
+                <span class="meaning-label">المعنى</span>
+                <p class="meaning" id="meaning">nature</p>
+                <p class="meaning-fr" id="meaningFr">la nature</p>
+            </div>
+        </main>
+
+        <!-- Letter Breakdown -->
+        <section class="breakdown-section">
+            <h3 class="section-title">تَحْلِيل الحُرُوف</h3>
+            <p class="section-subtitle">Décomposition des lettres</p>
+            
+            <div class="letters-grid" id="lettersGrid">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- Root Section -->
+        <section class="root-section">
+            <div class="root-badge">
+                <span class="root-label">الجَذْر</span>
+                <span class="root-letters" id="rootLetters">ط - ب - ع</span>
+            </div>
+            <p class="root-meaning" id="rootMeaning">Racine liée à l'impression, la nature, le caractère</p>
+        </section>
+
+        <!-- Example Sentence -->
+        <section class="example-section">
+            <h3 class="section-title">مِثَال</h3>
+            <p class="example-ar" id="exampleAr">الطَّبِيعَةُ جَمِيلَةٌ فِي الرَّبِيع</p>
+            <p class="example-fr" id="exampleFr">La nature est belle au printemps</p>
+        </section>
+
+        <!-- Word Counter -->
+        <div class="word-counter">
+            <span id="wordCounter">1</span> / <span id="totalWords">10</span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-buttons">
+            <button class="nav-btn" id="prevBtn" disabled>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+            <button class="nav-btn" id="archiveBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+            <button class="nav-btn" id="nextBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+        </nav>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

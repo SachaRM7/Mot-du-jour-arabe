@@ -375,37 +375,6 @@ function setupEventListeners() {
         toggleSave(word.id);
     });
     
-    // Swipe gestures - only on word card
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const wordCard = document.querySelector('.word-card');
-    
-    wordCard.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    
-    wordCard.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-    
-    function handleSwipe() {
-        const diff = touchStartX - touchEndX;
-        const threshold = 50;
-        
-        if (Math.abs(diff) > threshold) {
-            if (diff > 0 && currentDayOffset < Math.min(30, ARABIC_WORDS.length - 1)) {
-                // Swipe left = go to past (increase offset)
-                currentDayOffset++;
-                displayWordForDay(currentDayOffset);
-            } else if (diff < 0 && currentDayOffset > 0) {
-                // Swipe right = go to future/today (decrease offset)
-                currentDayOffset--;
-                displayWordForDay(currentDayOffset);
-            }
-        }
-    }
-    
     // Load voices
     if (window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = () => {

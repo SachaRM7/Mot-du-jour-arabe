@@ -30,13 +30,26 @@ function getMaxDayOffset() {
     return diffDays;
 }
 
+// Simple hash for pseudo-random but deterministic word selection
+function hashDay(day, year) {
+    // Mix the day with a prime multiplier for pseudo-randomness
+    let hash = (day * 2654435761 + year * 31) >>> 0;
+    hash = ((hash ^ (hash >> 16)) * 2246822519) >>> 0;
+    hash = ((hash ^ (hash >> 13)) * 3266489917) >>> 0;
+    hash = (hash ^ (hash >> 16)) >>> 0;
+    return hash;
+}
+
 // Get word index for a specific day offset (0 = today)
 function getWordIndexForDay(dayOffset) {
     const today = new Date();
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() - dayOffset);
     const dayOfYear = getDayOfYear(targetDate);
-    return dayOfYear % ARABIC_WORDS.length;
+    const year = targetDate.getFullYear();
+    // Use hash for pseudo-random distribution across categories
+    const hash = hashDay(dayOfYear, year);
+    return hash % ARABIC_WORDS.length;
 }
 
 // Get date for display

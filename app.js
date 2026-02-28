@@ -1,6 +1,60 @@
 // App State
 let currentDayOffset = 0; // 0 = today, 1 = yesterday, 2 = day before, etc.
 let savedWords = JSON.parse(localStorage.getItem('savedWords') || '[]');
+
+// i18n - Translations
+const translations = {
+    fr: {
+        listen: 'Écouter',
+        meaning: 'SIGNIFICATION',
+        letters: 'Lettres',
+        showForms: 'Voir formes',
+        hideForms: 'Masquer',
+        root: 'Racine',
+        example: 'Exemple',
+        favorites: 'Favoris',
+        noFavorites: 'Aucun favori sauvegardé',
+        today: "aujourd'hui",
+        yesterday: 'hier'
+    },
+    en: {
+        listen: 'Listen',
+        meaning: 'MEANING',
+        letters: 'Letters',
+        showForms: 'Show forms',
+        hideForms: 'Hide',
+        root: 'Root',
+        example: 'Example',
+        favorites: 'Favorites',
+        noFavorites: 'No favorites saved',
+        today: 'today',
+        yesterday: 'yesterday'
+    }
+};
+
+// Detect browser language (fr or en fallback)
+function getUserLang() {
+    const lang = navigator.language || navigator.userLanguage || 'en';
+    return lang.startsWith('fr') ? 'fr' : 'en';
+}
+
+const userLang = getUserLang();
+
+// Translation helper
+function t(key) {
+    return translations[userLang][key] || translations.en[key] || key;
+}
+
+// Get meaning based on user language
+function getMeaning(word) {
+    return userLang === 'fr' ? word.meaningFr : word.meaning;
+}
+
+// Get example translation (only French available, fallback for all)
+function getExampleTranslation(word) {
+    return word.exampleFr || '';
+}
+
 // Get initial theme: saved preference > system preference > light
 function getInitialTheme() {
     const saved = localStorage.getItem('theme');
@@ -127,9 +181,47 @@ const elements = {
 // Initialize
 function init() {
     initTheme();
+    applyTranslations();
     loadTodaysWord();
     setupEventListeners();
     updateFavoritesCount();
+}
+
+// Apply UI translations based on browser language
+function applyTranslations() {
+    // Listen button
+    const listenBtn = document.getElementById('listenBtn');
+    if (listenBtn) listenBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        ${t('listen')}
+    `;
+    
+    // Meaning label
+    const meaningLabel = document.querySelector('.meaning-label');
+    if (meaningLabel) meaningLabel.textContent = t('meaning');
+    
+    // Letters section
+    const lettersTitle = document.querySelector('.breakdown-section .section-title');
+    if (lettersTitle) lettersTitle.textContent = t('letters');
+    
+    // Toggle forms button
+    const toggleLabel = document.querySelector('.toggle-label');
+    if (toggleLabel) toggleLabel.textContent = t('showForms');
+    
+    // Root section
+    const rootTitle = document.querySelector('.root-section .section-title');
+    if (rootTitle) rootTitle.textContent = t('root');
+    
+    // Example section
+    const exampleTitle = document.querySelector('.example-section .section-title');
+    if (exampleTitle) exampleTitle.textContent = t('example');
+    
+    // Favorites modal
+    const favoritesTitle = document.querySelector('.modal-title');
+    if (favoritesTitle) favoritesTitle.textContent = t('favorites');
 }
 
 // Theme Management
@@ -167,15 +259,16 @@ function displayWordForDay(dayOffset) {
     currentDayOffset = dayOffset;
     const wordIndex = getWordIndexForDay(dayOffset);
     
-    // Update date in header
+    // Update date in header (use browser locale)
     const date = getDateForOffset(dayOffset);
+    const locale = userLang === 'fr' ? 'fr-FR' : 'en-US';
     const options = { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
     };
-    elements.currentDate.textContent = date.toLocaleDateString('fr-FR', options);
+    elements.currentDate.textContent = date.toLocaleDateString(locale, options);
     
     displayWord(wordIndex, dayOffset);
 }
@@ -193,14 +286,14 @@ function displayWord(index, dayOffset = 0) {
         elements.wordType.textContent = word.type;
         elements.arabicWord.textContent = word.word;
         elements.transliteration.textContent = word.transliteration;
-        elements.meaning.textContent = word.meaning;
-        elements.meaningFr.textContent = word.meaningFr;
+        elements.meaning.textContent = getMeaning(word);
+        elements.meaningFr.style.display = 'none'; // Hide, only show one meaning
         elements.rootLetters.textContent = word.root;
         elements.rootMeaning.textContent = word.rootMeaning;
         
         // Highlight word in example (ignore tashkil for matching)
         elements.exampleAr.innerHTML = highlightWordInExample(word.word, word.example);
-        elements.exampleFr.textContent = word.exampleFr;
+        elements.exampleFr.textContent = getExampleTranslation(word);
         
         // Update letters grid
         renderLettersGrid(word.letters);
@@ -250,7 +343,7 @@ function renderLettersGrid(letters) {
 function toggleLetterForms() {
     showLetterForms = !showLetterForms;
     const btn = document.getElementById('toggleFormsBtn');
-    btn.querySelector('.toggle-label').textContent = showLetterForms ? 'Masquer' : 'Voir formes';
+    btn.querySelector('.toggle-label').textContent = showLetterForms ? t('hideForms') : t('showForms');
     btn.classList.toggle('active', showLetterForms);
     
     // Re-render current word's letters

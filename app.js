@@ -375,15 +375,16 @@ function setupEventListeners() {
         toggleSave(word.id);
     });
     
-    // Swipe gestures
+    // Swipe gestures - only on word card
     let touchStartX = 0;
     let touchEndX = 0;
+    const wordCard = document.querySelector('.word-card');
     
-    document.addEventListener('touchstart', e => {
+    wordCard.addEventListener('touchstart', e => {
         touchStartX = e.changedTouches[0].screenX;
     }, { passive: true });
     
-    document.addEventListener('touchend', e => {
+    wordCard.addEventListener('touchend', e => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
     }, { passive: true });

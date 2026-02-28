@@ -131,12 +131,29 @@ def generate_word_entry(word_data, word_id):
 def generate_words_js(words_data):
     """Génère le contenu complet de words.js"""
     entries = []
+    seen_words = set()  # Pour détecter les doublons
+    duplicates = []
+    
     for i, word_data in enumerate(words_data, 1):
-        entry = generate_word_entry(word_data, i)
+        word = remove_tashkil(word_data['word'])  # Normaliser sans voyelles
+        
+        if word in seen_words:
+            duplicates.append(word_data['word'])
+            continue  # Skip les doublons
+        
+        seen_words.add(word)
+        entry = generate_word_entry(word_data, len(entries) + 1)
         entries.append(entry)
+    
+    # Avertir des doublons
+    if duplicates:
+        print(f"⚠️  {len(duplicates)} doublon(s) ignoré(s): {', '.join(duplicates)}", file=sys.stderr)
+    
+    print(f"✅ {len(entries)} mots générés", file=sys.stderr)
     
     # Générer le JS
     output = "// Base de vocabulaire arabe - Généré automatiquement\n"
+    output += f"// {len(entries)} mots uniques\n"
     output += "const ARABIC_WORDS = "
     output += json.dumps(entries, ensure_ascii=False, indent=4)
     output += ";\n"

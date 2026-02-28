@@ -1,0 +1,22 @@
+[
+    {
+        "word": "كِتَاب",
+        "transliteration": "kitāb",
+        "type": "اسم",
+        "meaning": "book",
+        "meaningFr": "le livre",
+        "rootMeaning": "Racine liée à l'écriture",
+        "example": "هَذَا كِتَابٌ جَمِيل",
+        "exampleFr": "C'est un beau livre"
+    },
+    {
+        "word": "قَلَم",
+        "transliteration": "qalam",
+        "type": "اسم",
+        "meaning": "pen",
+        "meaningFr": "le stylo",
+        "rootMeaning": "Racine liée au calame",
+        "example": "القَلَمُ أَقْوَى مِنَ السَّيْف",
+        "exampleFr": "Le stylo est plus fort que l'épée"
+    }
+]

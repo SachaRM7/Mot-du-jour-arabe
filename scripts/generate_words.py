@@ -135,7 +135,7 @@ def generate_words_js(words_data):
     duplicates = []
     
     for i, word_data in enumerate(words_data, 1):
-        word = remove_tashkil(word_data['word'])  # Normaliser sans voyelles
+        word = word_data['word']  # Comparer mot exact AVEC voyelles
         
         if word in seen_words:
             duplicates.append(word_data['word'])

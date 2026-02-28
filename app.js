@@ -21,6 +21,15 @@ function getDayOfYear(date) {
     return Math.floor(diff / oneDay);
 }
 
+// Get max days we can go back (until Jan 1st of current year)
+function getMaxDayOffset() {
+    const today = new Date();
+    const jan1 = new Date(today.getFullYear(), 0, 1);
+    const diffTime = today - jan1;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
 // Get word index for a specific day offset (0 = today)
 function getWordIndexForDay(dayOffset) {
     const today = new Date();
@@ -187,7 +196,7 @@ function displayWord(index, dayOffset = 0) {
         // Can't go to future (dayOffset can't be negative)
         elements.nextBtn.disabled = (dayOffset === 0);
         // Can go back in history (limit to ~30 days or word count)
-        elements.prevBtn.disabled = (dayOffset >= Math.min(30, ARABIC_WORDS.length - 1));
+        elements.prevBtn.disabled = (dayOffset >= getMaxDayOffset());
         
         // Update archive button
         updateArchiveButton(word.id);
@@ -354,7 +363,7 @@ function setupEventListeners() {
     // Navigation (prev = go to past, next = go to future/today)
     elements.prevBtn.addEventListener('click', () => {
         // Go to previous day (further in the past)
-        if (currentDayOffset < Math.min(30, ARABIC_WORDS.length - 1)) {
+        if (currentDayOffset < getMaxDayOffset()) {
             currentDayOffset++;
             displayWordForDay(currentDayOffset);
         }
